@@ -1,0 +1,14 @@
+{
+  "name": "few-2-5-challenge-1",
+  "version": "1.0.0",
+  "description": "Challenges with the Titanic Dataset",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --verbose"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jest": "^27.2.5"
+  }
+}
