@@ -37,36 +37,7 @@ describe('Challenge 2 Titanic', () => {
 	// are really stuck on a problem. 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	test.skip('Test getAll', () => {
+	test('Test getAll', () => {
 		const allFares = data.map(p => p.fields.fare)
 		const allPclass = data.map(p => p.fields.pclass)
 		const allEmbarked = data.map(p => p.fields.embarked)
@@ -76,7 +47,7 @@ describe('Challenge 2 Titanic', () => {
 		expect(index.getAllValuesForProperty(data, 'embarked')).toEqual(allEmbarked)
 	})
 
-	test.skip('Test filterByProperty', () => {
+	test('Test filterByProperty', () => {
 		const allMale = data.filter(p => p.fields.sex === 'male')
 		const allFemale = data.filter(p => p.fields.sex === 'female')
 
@@ -84,7 +55,7 @@ describe('Challenge 2 Titanic', () => {
 		expect(index.filterByProperty(data, 'sex', 'female')).toEqual(allFemale)
 	})
 
-	test.skip('Test filterNullForProperty', () => {
+	test('Test filterNullForProperty', () => {
 		const faresNotNull = data.filter(p => p.fields.fare !== undefined)
 		const agesNotNull = data.filter(p => p.fields.age !== undefined)
 		const pclassNotNull = data.filter(p => p.fields.pclass !== undefined)
@@ -94,7 +65,7 @@ describe('Challenge 2 Titanic', () => {
 		expect(index.filterNullForProperty(data, 'pclass')).toEqual(pclassNotNull)
 	})
 
-	test.skip('Test sumAllProperty', () => {
+	test('Test sumAllProperty', () => {
 		const sumAges = data.reduce((acc, p) => p.fields.age !== undefined ? acc + p.fields.age : acc, 0)
 		const sumFares = data.reduce((acc, p) => p.fields.fare !== undefined ? acc + p.fields.fare : acc, 0)
 

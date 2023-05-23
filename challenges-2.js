@@ -25,7 +25,7 @@
 // Or if property = 'age' -> [40, 26, 22, 28, 23, 45, 21, ...]
 
 const getAllValuesForProperty = (data, property) => {
-	return []
+	return data.map(p => p.fields[property])
 }
 
 // 2 -------------------------------------------------------------
@@ -34,7 +34,7 @@ const getAllValuesForProperty = (data, property) => {
 // array of all the male passengers [{...}, {...}, {...}, ...]
 
 const filterByProperty = (data, property, value) => {
-	return []
+	return data.filter(p => p.fields[property] === value)
 }
 
 // 3 -------------------------------------------------------------
@@ -43,7 +43,8 @@ const filterByProperty = (data, property, value) => {
 // given property have been removed
 
 const filterNullForProperty = (data, property) => {
-	return []
+	return data
+	.filter(p => p.fields[property] !== undefined && p.fields[property] !== null)
 }
 
 // 4 -------------------------------------------------------------
@@ -52,7 +53,10 @@ const filterNullForProperty = (data, property) => {
 // Return the total of all values for a given property. This
 
 const sumAllProperty = (data, property) => {
-	return 0
+	const sum = data
+	.filter(p => p.fields[property] !== undefined && p.fields[property] !== null)
+	.reduce((acc, p) => acc + p.fields[property], 0)
+	return sum
 }
 
 
@@ -67,7 +71,13 @@ const sumAllProperty = (data, property) => {
 // at Cherbourg, 77 emabrked at Queenstown, and 2 are undedfined
 
 const countAllProperty = (data, property) => {
-	return {}
+	const counts = data.reduce((acc, obj) => {
+		const value = obj.fields[property];
+		acc[value] = (acc[value] || 0) + 1;
+		return acc;
+	  }, {});
+	
+	  return counts;
 }
 
 
@@ -80,7 +90,14 @@ const countAllProperty = (data, property) => {
 // ages 0 - 10, 10 - 20, 20 - 30 etc. 
 
 const makeHistogram = (data, property, step) => {
-	return []
+	const histogram = data.reduce((acc, obj) => {
+		const value = obj.fields[property];
+		const bucket = Math.floor(value / step) * step;
+		acc[bucket] = (acc[bucket] || 0) + 1;
+		return acc;
+	  }, {});
+	
+	return Object.values(histogram);
 }
 
 // 7 ------------------------------------------------------------
