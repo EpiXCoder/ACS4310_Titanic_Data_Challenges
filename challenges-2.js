@@ -15,6 +15,20 @@
 // as the parameter data. Your goal is to extract the relevant 
 // piece of information from the data and return it. 
 
+const fs = require('fs');
+const path = require('path');
+
+const json_data = path.join(__dirname, './titanic-passengers.json');
+
+let data = null;
+
+try {
+  const rawData = fs.readFileSync(json_data, 'utf8');
+  data = JSON.parse(rawData);
+} catch (err) {
+  console.error(err);
+}
+
 // ===============================================================
 
 // ---------------------------------------------------------------
@@ -90,15 +104,29 @@ const countAllProperty = (data, property) => {
 // ages 0 - 10, 10 - 20, 20 - 30 etc. 
 
 const makeHistogram = (data, property, step) => {
-	const histogram = data.reduce((acc, obj) => {
-		const value = obj.fields[property];
-		const bucket = Math.floor(value / step) * step;
-		acc[bucket] = (acc[bucket] || 0) + 1;
-		return acc;
-	  }, {});
-	
-	return Object.values(histogram);
+	const histogram = Array.from(data
+	.filter(p => p.fields[property] !== undefined)
+	.reduce((acc, p) => {
+		if (acc[Math.floor(p.fields[property] / step)] === undefined) {
+			acc[Math.floor(p.fields[property] / step)] = 1
+		} else {
+			acc[Math.floor(p.fields[property] / step)] += 1
+		}
+		return acc 
+	}, []), v => v || 0)
+	return histogram;
 }
+
+// Note! There may not be no values for a particular step. For example
+// if we get passenger ages in increments of 5 there are 0 passengers in the 
+// 70 bracket but there are passengers in 60, and 80. So you might end up with 
+// Age bucket
+//   5 10 15 20  25  30 35 40 45 50 55 60 65 70 75            80  85
+// [40,22,16,86,114,106,95,72,48,41,32,16,15, 4, 6,<1 empty item>, 1]
+// There are 0 passengers in the 76 to 80 year age bucket. You may have the 
+// right answer but if that slot in the array is empty the test will fail 
+// becuase that index should show 0. There are 0 passengers in that age range. 
+
 
 // 7 ------------------------------------------------------------
 // normalizeProperty takes data and a property and returns an 
@@ -106,8 +134,20 @@ const makeHistogram = (data, property, step) => {
 // to divide each value by the maximum value in the array.
 
 const normalizeProperty = (data, property) => {
-	return []
+	const values = data.filter(p => p.fields[property] !== undefined).map(obj => obj.fields[property]);
+	const maxValue = Math.max(...values);  
+	const normalizedValues = values.map(value => value / maxValue);
+	return normalizedValues;
 }
+
+// Normalizing is an important process that can make many other
+// operations easier. Normalizing allows you to take numbers in one 
+// range and convert them to any other range. 
+// For this example you need to find the max value first before 
+// generating an array of normalized values.
+
+// If the range of data included negative numbers or did not start at 0
+// we might also need to find the minimum value. 
 
 // 8 ------------------------------------------------------------
 // Write a function that gets all unique values for a property. 
@@ -117,8 +157,21 @@ const normalizeProperty = (data, property) => {
 // would return ['male', 'female']
 
 const getUniqueValues = (data, property) => {
-	return []
-}
+	const uniqueValues = data.reduce((uniqueValues, obj) => {
+	  const value = obj.fields[property];
+	  if (value !== undefined && !uniqueValues.includes(value)) {
+		uniqueValues.push(value);
+	  }
+	  return uniqueValues;
+	}, []);
+  
+	const uniqueValuesAsString = uniqueValues.map(value => String(value));
+	return uniqueValuesAsString;
+  };
+
+// There are a couple ways to do this. 
+// Use an object and add each value as a key. The value can be anything. 
+// Use a Set. Be sure to convert this to an array before returning! 
 
 // --------------------------------------------------------------
 // --------------------------------------------------------------
@@ -132,3 +185,28 @@ module.exports = {
 	normalizeProperty,
 	getUniqueValues
 }
+// const ages10 = data
+// .filter(p => p.fields.age !== undefined)
+// .reduce((acc, p) => {
+// 	if (acc[Math.floor(p.fields.age / 10)] === undefined) {
+// 		acc[Math.floor(p.fields.age / 10)] = 1
+// 	} else {
+// 		acc[Math.floor(p.fields.age / 10)] += 1
+// 	}
+// 	return acc 
+// }, [])
+
+// const ages5 = data
+// 		.filter(p => p.fields.age !== undefined)
+// 		.reduce((acc, p) => {
+// 			if (acc[Math.floor(p.fields.age / 5)] === undefined) {
+// 				acc[Math.floor(p.fields.age / 5)] = 1
+// 			} else {
+// 				acc[Math.floor(p.fields.age / 5)] += 1
+// 			}
+// 			return acc 
+// 		}, [])
+
+// makeHistogram(data, 'age', 5);
+// console.log('test:');
+// console.log(Array.from(ages5, v => v || 0));
